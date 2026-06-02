@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 =============================================================================
-CLEANQUERY - STREAMLIT WEB APP
+SOCIAL MEDIA QUERY CREATOR - STREAMLIT WEB APP
 =============================================================================
-Este arquivo implementa a versão oficial interativa em Streamlit do
-Social Media Query Creator. Oferece o mesmo visual sofisticado e o fluxo
-completo da aplicação React, incluindo colagem de links e upload de arquivos.
+Este arquivo implementa a versão interativa em Streamlit da plataforma
+Social Media Query Creator para fidedignidade absoluta com o design de marca
+revelado no preview do React (Slate, Burson Yellow e Off-White).
 =============================================================================
 """
 
@@ -23,86 +23,207 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilo personalizado para refletir o luxuoso design corporativo Burson (Slate escuro, amarelo brilhante e off-white)
+# Estilização sob medida com CSS injetado de alto nível para casar exatamente com o design corporativo do React (off-white, slate escuro e amarelo Burson)
 st.markdown("""
 <style>
-    /* Configurações Gerais de Fundo e Layout */
+    /* Fundo geral moderno off-white e fontes do sistema */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;550;700&display=swap');
+    
     .stApp {
-        background-color: #FFFFF1;
-    }
-    
-    /* Fontes e Cabeçalhos corporativos */
-    h1, h2, h3, .brand-title {
+        background-color: #F8FAFC !important;
         color: #0A0400 !important;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'Inter', -apple-system, sans-serif !important;
     }
     
-    .brand-title {
-        font-size: 2.1rem;
+    /* Configuração do Header com o mesmo estilo do React, utilizando a premissa de luxo Burson */
+    .b-header {
+        background-color: #0A0400;
+        color: #FFFFF1;
+        padding: 1.5rem 2rem;
+        border-bottom: 4px solid #FEFF00;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .b-title-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .b-logo {
+        background-color: #FEFF00;
+        color: #0A0400;
+        font-size: 24px;
         font-weight: 900;
-        letter-spacing: -1.2px;
-        text-transform: uppercase;
-        margin-bottom: 0.1rem;
-        border-bottom: 3px solid #FEFF00;
-        display: inline-block;
-        padding-bottom: 0.2rem;
-    }
-    
-    .brand-subtitle {
-        color: #555c68;
-        font-size: 0.95rem;
-        font-weight: 500;
-        margin-bottom: 1.8rem;
-    }
-    
-    /* Estilização de Cartões de Métricas */
-    .metric-card {
-        background-color: #ffffff;
-        border: 1px solid #e1e8f0;
-        border-left: 5px solid #0A0400;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 6px;
-        padding: 1.1rem;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.01);
-        text-align: center;
+        border: 2px solid #FEFF00;
+        font-family: 'Inter', sans-serif;
     }
-    .metric-val {
-        font-size: 1.8rem;
+    
+    .b-title-texts h1 {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1.35rem !important;
+        font-weight: 900 !important;
+        color: #FFFFF1 !important;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        line-height: 1.2;
+    }
+    
+    .b-title-texts p {
+        margin: 4px 0 0 0 !important;
+        font-size: 0.75rem !important;
+        color: #94a3b8 !important;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+    
+    .b-badge {
+        background-color: #FEFF00;
+        color: #0A0400;
+        font-size: 9px;
+        font-weight: 950;
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-left: 8px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    
+    /* Configuração de Toggles e Filtros */
+    .section-box {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    }
+    
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #0F172A;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+    }
+    
+    /* Cartões de Métricas elegantes com borda amarela Burson */
+    .metrics-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .metric-card-styled {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-left: 4px solid #0A0400;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        transition: all 0.2s ease;
+    }
+    
+    .metric-card-styled:hover {
+        transform: translateY(-1px);
+        border-left: 4px solid #FEFF00;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    
+    .metric-val-num {
+        font-size: 1.6rem;
         font-weight: 900;
         color: #0A0400;
-        margin: 0;
-        line-height: 1.1;
-    }
-    .metric-label {
-        font-size: 0.7rem;
-        color: #64748b;
-        text-transform: uppercase;
-        font-weight: 800;
-        letter-spacing: 0.6px;
-        margin-top: 0.3rem;
+        line-height: 1;
     }
     
-    /* Customização dos botões e alertas do Streamlit */
+    .metric-lbl-text {
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.4rem;
+    }
+    
+    /* Configurar abas do Streamlit */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: transparent;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px 6px 0 0;
+        padding: 8px 16px;
+        font-weight: bold;
+        color: #475569;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #FEFF00 !important;
+        color: #0A0400 !important;
+        border-bottom: 2px solid #0A0400 !important;
+        font-weight: 900 !important;
+    }
+    
+    /* Customização dos botões do Streamlit */
     div.stButton > button {
         background-color: #0A0400 !important;
         color: #FEFF00 !important;
         font-weight: 800 !important;
-        border: none !important;
-        border-radius: 4px !important;
-        padding: 0.5rem 1.25rem !important;
+        border: 1px solid #0A0400 !important;
+        border-radius: 6px !important;
         text-transform: uppercase !important;
-        font-size: 0.8rem !important;
         letter-spacing: 0.5px !important;
+        padding: 0.5rem 1.25rem !important;
         transition: all 0.15s ease-in-out !important;
     }
     div.stButton > button:hover {
         background-color: #222222 !important;
+        border-color: #222222 !important;
+        color: #FEFF00 !important;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Info Alert no topo */
+    .top-info {
+        background-color: rgba(254, 255, 0, 0.08);
+        border: 1px solid rgba(10, 4, 0, 0.12);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# SAMPLE DATA SET EXACTLY REPLICATING /src/data.ts
-SAMPLE_ROWS = [
+
+# =============================================================================
+# REPLICAÇÃO DOS DADOS DO RELATÓRIO DO /src/data.ts
+# =============================================================================
+SAMPLE_ROW_DATA = [
     {
         'Data': '29/05/2026',
         'Canal': 'Facebook',
@@ -201,14 +322,11 @@ SAMPLE_ROWS = [
     }
 ]
 
+
 # =============================================================================
-# EXTRACTOR CORE LOGIC (Python matching /src/utils/urlParser.ts exactly)
+# EXTRATOR CORE LOGIC (Python matching /src/utils/urlParser.ts exactly)
 # =============================================================================
 def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
-    """
-    Analisa e extrai o ID correspondente da publicação dependendo da plataforma.
-    Retorna (id_extraido, nome_plataforma, is_valid)
-    """
     if not isinstance(url, str) or not url.strip():
         return "", "others", False
 
@@ -216,38 +334,32 @@ def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
 
     # 1. Twitter / X
     if ("twitter.com" in trimmed or "x.com" in trimmed) and active_platforms.get('twitter', True):
-        # Padrão original de status
         twitter_regex = r'(?:twitter\.com|x\.com)/[^/]+/status/(\d+)'
         match = re.search(twitter_regex, trimmed, re.IGNORECASE)
         if match:
             return match.group(1), 'twitter', True
             
-        # Fallback de ID numérico no final da rota
         fallback_match = re.search(r'/(\d+)/?(?:\?|$)', trimmed)
         if fallback_match:
             return fallback_match.group(1), 'twitter', True
 
     # 2. Facebook
     elif "facebook.com" in trimmed and active_platforms.get('facebook', True):
-        # Primeiro, tentar extrair número grande de ID no final da URL
         normalized_url = trimmed.rstrip('/')
         match_end_num = re.search(r'/(\d{6,25})(?:\?|#|$)', normalized_url)
         if match_end_num:
             return match_end_num.group(1), 'facebook', True
 
-        # Padrão posts normais
         posts_regex = r'/posts/(\d+)'
         match = re.search(posts_regex, trimmed, re.IGNORECASE)
         if match:
             return match.group(1), 'facebook', True
 
-        # Permalink de grupo
         groups_regex = r'/permalink/(\d+)'
         match_perm = re.search(groups_regex, trimmed, re.IGNORECASE)
         if match_perm:
             return match_perm.group(1), 'facebook', True
 
-        # Parâmetro de URL query
         try:
             parsed = urlparse(trimmed)
             qs = parse_qs(parsed.query)
@@ -259,7 +371,6 @@ def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
         except Exception:
             pass
 
-        # Padrão genérico de posts que pode ter um slug com traço
         match_gen = re.search(r'/posts/([^/?]+)', trimmed, re.IGNORECASE)
         if match_gen:
             id_only = match_gen.group(1).split('?')[0]
@@ -270,12 +381,10 @@ def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
 
     # 3. Instagram
     elif "instagram.com" in trimmed and active_platforms.get('instagram', True):
-        # Padrão direto
         match_direct = re.search(r'instagram\.com/(?:p|reel|tv)/([^/?]+)', trimmed, re.IGNORECASE)
         if match_direct:
             return match_direct.group(1), 'instagram', True
             
-        # Padrão com o nome do perfil
         match_user = re.search(r'instagram\.com/[^/]+/(?:p|reel|tv)/([^/?]+)', trimmed, re.IGNORECASE)
         if match_user:
             return match_user.group(1), 'instagram', True
@@ -310,19 +419,16 @@ def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
         if fallback_match:
             return fallback_match.group(1), 'linkedin', True
 
-    # Robust Fallback genérico para links estruturados
+    # Robust Fallback genérico para sequências numéricas (idêntico ao original do React)
     try:
-        # 1. Verifica se tem sequência numérica marcante no fim do caminho
         end_numeric_match = re.search(r'/(\d{6,25})/?(?:\?|#|$)', trimmed)
         if end_numeric_match:
             return end_numeric_match.group(1), 'others', True
 
-        # 2. Sequência numérica longa no meio (8+ dígitos)
         body_numeric_match = re.search(r'(?:^|/|\D)(\d{8,25})(?:\D|$)', trimmed)
         if body_numeric_match:
             return body_numeric_match.group(1), 'others', True
 
-        # 3. Bloco alfa numérico final sanitizado
         cleaned = trimmed.rstrip('/')
         segments = cleaned.split('/')
         if segments:
@@ -340,318 +446,469 @@ def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
 
 
 # =============================================================================
-# LAYOUT & INTERFACE DO USUÁRIO STREAMLIT
+# CONSTRUÇÃO DO HEADER IDENTIDADE CORPORATIVA BURSON
 # =============================================================================
+st.markdown("""
+<div class="b-header">
+    <div class="b-title-group">
+        <div class="b-logo">B</div>
+        <div class="b-title-texts">
+            <h1>Social Media Query Creator <span class="b-badge">PRO</span></h1>
+            <p>Integração de Relatórios & Purificador de Identificadores de Mídia Social</p>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown('<div class="brand-title">🔍 BURSON QUERY GENERATOR</div>', unsafe_allow_html=True)
-st.markdown('<div class="brand-subtitle">Extrator de IDs Higienizados & Gerador de Query Booleana com Limitador de 4096 Caracteres</div>', unsafe_allow_html=True)
 
-# Divisão de Colunas: Barra Lateral de Configurações & Painel Principal
-with st.sidebar:
-    st.markdown("### 🛠️ CONFIGURAÇÕES ")
-    
-    # 1. Escolha do Método de Entrada dos Dados (Exatamente igual ao React)
-    input_method = st.radio(
-        "Selecione o método de entrada:",
-        ["Colar links diretamente (Mais rápido)", "Carregar planilha .xlsx / .csv", "Testar com dados de exemplo"],
-        index=0
-    )
-    
-    st.write("---")
-    
-    # 2. Seleção de Redes Sociais Ativas (Multi-toggles)
-    st.markdown("**🌐 Canais Ativos para Monitorizar**")
-    active_twitter = st.toggle("Twitter / X", value=True)
-    active_facebook = st.toggle("Facebook", value=True)
-    active_instagram = st.toggle("Instagram", value=True)
-    active_tiktok = st.toggle("TikTok", value=True)
-    active_youtube = st.toggle("YouTube", value=True)
-    active_linkedin = st.toggle("LinkedIn", value=True)
-    
-    active_platforms = {
-        'twitter': active_twitter,
-        'facebook': active_facebook,
-        'instagram': active_instagram,
-        'tiktok': active_tiktok,
-        'youtube': active_youtube,
-        'linkedin': active_linkedin
-    }
-    
-    st.write("---")
-    
-    # 3. Remover LinkedIn preventivamente (recurso do App React)
-    remove_linkedin_preemptive = st.checkbox("Remover links do LinkedIn", value=True, 
-                                            help="Quando marcado, descarta links de 'linkedin.com' automaticamente para diminuir o tamanho final da query.")
+# =============================================================================
+# DEFINIÇÃO DOS TABS OFICIAIS COM O VISUAL DO REACT
+# =============================================================================
+tab_flow, tab_python = st.tabs(["Interface Interativa", "Código Auto-Postável Python"])
 
-    # 4. Bloco de ajuda para o Deploy no Streamlit Cloud
-    st.write("---")
-    with st.expander("🚀 Como publicar este app no seu GitHub?", expanded=False):
-        st.markdown("""
-        **Passo a passo simples:**
-        1. Crie uma conta gratuita em [github.com](https://github.com) se não tiver.
-        2. No canto superior direito, clique em **New Repository**.
-        3. Dê o nome de **`cleanquery-burson`** e marque como **Public**.
-        4. Suba ou crie os seguintes arquivos na raiz do repo:
-           - **`app.py`** (este mesmo arquivo)
-           - **`requirements.txt`** (contendo as bibliotecas necessárias)
-        5. Vá em [share.streamlit.io](https://share.streamlit.io), conecte seu GitHub e selecione este repositório.
-        6. Clique em **Deploy** e seu app estará no ar para qualquer colega usar!
-        """)
-
-# Inicializar os dados de acordo com o método de entrada escolhido
-df_origin = None
-url_column = "URL"
-use_filter = False
-filter_column = ""
-filter_value = ""
-
-if input_method == "Colar links diretamente (Mais rápido)":
-    st.markdown("### 📋 1. Cole seus links de redes sociais")
-    paste_content = st.text_area(
-        "Insira os links brutos (cole as linhas da coluna do Excel diretamente aqui, um link por linha):",
-        value="",
-        placeholder="https://www.facebook.com/703877341748998/posts/1459573502846041\nhttps://twitter.com/EInvestidor/status/2036442951404933226\nhttps://www.instagram.com/p/C7X3x1uuW8z/",
-        height=180
-    )
+with tab_flow:
+    # Top Info Alert igual ao React
+    st.markdown("""
+    <div class="top-info">
+        <div style="font-size: 0.725rem; font-weight: 800; color: #0A0400; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+            Como funciona este fluxo interativo?
+        </div>
+        <div style="font-size: 0.775rem; color: #334155; line-height: 1.4;">
+            Este simulador reproduz o comportamento exato que o script Python realiza localmente na sua máquina: 
+            ele pega um rascunho dos dados brutos passados, aplica as condições de filtragem 
+            definidas, limpa referências e descarta lixo de links de publicações (extraindo apenas o ID puro) 
+            e sintetiza a query booleana pronta em caixas de até 4096 caracteres para uso em monitoramento.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
-    if paste_content.strip():
-        # Converter linhas coladas em DataFrame
-        lines = [line.strip() for line in paste_content.split('\n') if line.strip()]
-        df_origin = pd.DataFrame({'URL': lines})
-        url_column = 'URL'
-    else:
-        st.info("👆 Cole alguns links de publicação acima para ver os IDs sendo extraídos instantaneamente!")
-
-elif input_method == "Carregar planilha .xlsx / .csv":
-    st.markdown("### 📁 1. Faça upload da planilha Excel ou CSV")
-    uploaded_file = st.file_uploader(
-        "Carregue seu relatório ou planilha (.xlsx ou .csv):",
-        type=["xlsx", "xls", "csv"],
-        help="A planilha deve ter uma coluna de links/URLs de redes sociais."
-    )
+    # Grid de Layout Principal (Painel Lateral de configs e Resultados)
+    col_left, col_right = st.columns([1, 2], gap="large")
     
-    if uploaded_file is not None:
-        try:
-            if uploaded_file.name.endswith('.csv'):
-                df_origin = pd.read_csv(uploaded_file)
+    with col_left:
+        # Configuração de Entrada de Dados
+        st.markdown('<div class="section-box">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Origem dos Dados</div>', unsafe_allow_html=True)
+        
+        input_type = st.radio(
+            "Origem das URLs:",
+            [
+                "Colar links diretamente (Mais rápido)", 
+                "Carregar planilha de relatório (.xlsx, .csv)", 
+                "Carregar dados de simulação Burson"
+            ],
+            index=0
+        )
+        
+        raw_text_links = ""
+        uploaded_df = None
+        
+        if input_type == "Colar links diretamente (Mais rápido)":
+            raw_text_links = st.text_area(
+                "Cole seus links (um por linha):",
+                placeholder="https://www.instagram.com/p/C7X3x1uuW8z/\nhttps://twitter.com/EInvestidor/status/2036442951404933226\nhttps://www.facebook.com/radioitatiaia/posts/1468483525305135",
+                height=150
+            ).strip()
+            
+        elif input_type == "Carregar planilha de relatório (.xlsx, .csv)":
+            uploaded_file = st.file_uploader(
+                "Selecione uma planilha de menções:",
+                type=["xlsx", "xls", "csv"]
+            )
+            if uploaded_file is not None:
+                try:
+                    if uploaded_file.name.endswith('.csv'):
+                        uploaded_df = pd.read_csv(uploaded_file)
+                    else:
+                        uploaded_df = pd.read_excel(uploaded_file, engine='openpyxl')
+                    st.success("Tabela carregada com sucesso!")
+                except Exception as e:
+                    st.error(f"Erro ao analisar arquivo: {e}")
             else:
-                df_origin = pd.read_excel(uploaded_file, engine='openpyxl')
+                st.info("Aguardando upload de planilha...")
                 
-            st.toast("⚡ Planilha carregada e lida com sucesso!", icon="✅")
-        except Exception as e:
-            st.error(f"Erro ao ler o arquivo selecionado: {e}")
-            df_origin = None
-            
-    if df_origin is not None:
-        # Configurações de coluna de URLs
-        cols = list(df_origin.columns)
-        
-        # Tentar auto-identificar coluna 'URL'
-        url_idx = 0
-        for i, col in enumerate(cols):
-            if col.lower() in ['url', 'link', 'mencion', 'menção', 'endereco', 'endereço']:
-                url_idx = i
-                break
-                
-        # Layout lado a lado para mapear as colunas
-        col_c1, col_c2 = st.columns(2)
-        with col_c1:
-            url_column = st.selectbox("Selecione a coluna de URLs:", options=cols, index=url_idx)
-            
-        with col_c2:
-            use_filter = st.checkbox("Aplicar filtro de coluna (ex: Sentimento = Negativo)", value=False)
-            
-        if use_filter:
-            # Mapear coluna de sentimento/filtragem
-            filter_idx = 0
-            for i, col in enumerate(cols):
-                if col.lower() in ['sentimento', 'sentiment', 'tag', 'status']:
-                    filter_idx = i
-                    break
-            
-            col_f1, col_f2 = st.columns(2)
-            with col_f1:
-                filter_column = st.selectbox("Filtrar pela coluna:", options=cols, index=filter_idx)
-            with col_f2:
-                filter_value = st.text_input("Contendo o valor:", value="Negativo")
-    else:
-        st.info("💡 Faça o upload de uma planilha para selecionar as colunas de URLs e configurar os filtros.")
-
-else: # Usar dados de exemplo
-    st.markdown("### 💡 1. Testando com dados de simulação Burson")
-    df_origin = pd.DataFrame(SAMPLE_ROWS)
-    url_column = 'URL'
-    
-    # Adicionar configuração de filtros padrão para que use como exemplo
-    col_c1, col_c2 = st.columns(2)
-    with col_c1:
-        st.info("Usando coluna padrão de links: **'URL'**.")
-    with col_c2:
-        use_filter = st.checkbox("Filtrar por sentimento na simulação", value=True)
-        
-    if use_filter:
-        filter_column = 'Sentimento'
-        filter_value = 'Negativo'
-        st.caption("Filtro Ativo: `Sentimento = Negativo`")
-
-
-# =============================================================================
-# EXECUTAR FILTRAGEM & EXTRAÇÃO DE IDs
-# =============================================================================
-if df_origin is not None:
-    # 1. Aplicar filtro preemptivo se configurado
-    df_working = df_origin.copy()
-    
-    # Se configurado para remover linkedin de forma preemptiva na varredura geral
-    if remove_linkedin_preemptive and url_column in df_working.columns:
-        # Filtrar fora links do linkedin
-        df_working = df_working[~df_working[url_column].astype(str).str.lower().str.contains('linkedin', na=False)]
-        
-    if use_filter and filter_column:
-        df_working = df_working[df_working[filter_column].astype(str).str.contains(filter_value, case=False, na=False)]
-        
-    # 2. Executar extração linha a linha
-    rows_processed = []
-    ids_unicos = []
-    
-    for idx, row in df_working.iterrows():
-        url_val = str(row.get(url_column, "")).strip()
-        
-        if not url_val or url_val.lower() == 'nan':
-            continue
-            
-        post_id, platform, is_valid = extrair_id_da_url(url_val, active_platforms)
-        
-        status = "Sucesso" if is_valid else "Não identificado/Bloqueado"
-        
-        rows_processed.append({
-            'URL_Original': url_val,
-            'ID_Extraido': post_id if is_valid else "",
-            'Canal': platform.capitalize() if platform != 'others' else 'Outros',
-            'Resultado': status,
-            'Valido': is_valid,
-            'Info': row.to_dict() # manter os metadados
-        })
-        
-        if is_valid and post_id not in ids_unicos:
-            ids_unicos.append(post_id)
-            
-    df_results_full = pd.DataFrame(rows_processed)
-    
-    # 3. Exibir Cartões de Métricas no topo dos Resultados
-    st.write("---")
-    st.markdown("### 📊 2. Métricas do Batch Processado")
-    
-    total_linhas_iniciais = len(df_origin)
-    total_linhas_filtradas = len(df_working)
-    total_sucesso = len(df_results_full[df_results_full['Valido'] == True]) if len(df_results_full) > 0 else 0
-    total_ids_unicos = len(ids_unicos)
-    
-    met_col1, met_col2, met_col3, met_col4 = st.columns(4)
-    with met_col1:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-val">{total_linhas_iniciais}</div>
-            <div class="metric-label">Linhas Totais</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with met_col2:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-val">{total_linhas_filtradas}</div>
-            <div class="metric-label">Linhas Selecionadas</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with met_col3:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-val">{total_sucesso}</div>
-            <div class="metric-label">IDs Extraídos</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with met_col4:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-val">{total_ids_unicos}</div>
-            <div class="metric-label">IDs Únicos</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    # =============================================================================
-    # GERAÇÃO QUERIES COM LIMITE INURLS:(...) ATÉ 4096 CARACTERES
-    # =============================================================================
-    st.write("")
-    st.markdown("### 📝 3. Query de Monitoramento Unificada")
-    
-    chunks_queries = []
-    current_chunk = []
-    current_length = 8  # comprimento de prefixo 'inurls:('
-    
-    for x in ids_unicos:
-        formatted_id = f'"{x}"' if '-' in x else x
-        addition_length = (4 + len(formatted_id)) if len(current_chunk) > 0 else len(formatted_id) # 4 por causa do " OR "
-        
-        # Checar se adicionar o elemento ultrapassar 4096 caracteres
-        if current_length + addition_length + 1 > 4096:
-            if len(current_chunk) > 0:
-                chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
-                current_chunk = [formatted_id]
-                current_length = 8 + len(formatted_id)
-            else:
-                chunks_queries.append("inurls:(" + formatted_id + ")")
-                current_chunk = []
-                current_length = 8
         else:
-            current_chunk.append(formatted_id)
-            current_length += addition_length
+            # Usar dados simulados
+            uploaded_df = pd.DataFrame(SAMPLE_ROW_DATA)
+            st.info("Demonstração ativa com as 12 menções padrão de amostra.")
             
-    if len(current_chunk) > 0:
-        chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
+        st.markdown('</div>', unsafe_allow_html=True)
         
-    if len(chunks_queries) > 0:
-        if len(chunks_queries) > 1:
-            st.warning(f"⚠️ **Atenção:** Como o tamanho total ultrapassaria o limite de 4096 caracteres, geramos de forma automática **{len(chunks_queries)} queries independentes**, respeitando perfeitamente o operador!")
+        # Seleção de Colunas e Filtros
+        st.markdown('<div class="section-box">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Mapeamento & Condições</div>', unsafe_allow_html=True)
+        
+        sel_url_col = "URL"
+        sel_filter_col = ""
+        sel_filter_val = ""
+        
+        # Se temos uma tabela de entrada (seja carregada ou simulação)
+        if uploaded_df is not None:
+            available_cols = list(uploaded_df.columns)
             
-        for index, query_text in enumerate(chunks_queries):
-            part_matches = len(query_text.replace("inurls:(", "").replace(")", "").split(" OR "))
+            # Tentar autodetectar URL
+            auto_idx = 0
+            for i, col in enumerate(available_cols):
+                if col.lower() in ['url', 'link', 'mencion', 'menção', 'endereco', 'endereço']:
+                    auto_idx = i
+                    break
+                    
+            sel_url_col = st.selectbox(
+                "Coluna de URLs:",
+                options=available_cols,
+                index=auto_idx
+            )
+            
+            enable_conditions = st.checkbox("Aplicar filtragem interna por valor", value=False)
+            if enable_conditions:
+                # Tentar autodetectar sentimento
+                filt_idx = 0
+                for i, col in enumerate(available_cols):
+                    if col.lower() in ['sentimento', 'sentiment', 'tags', 'mídia', 'canal']:
+                        filt_idx = i
+                        break
+                        
+                sel_filter_col = st.selectbox(
+                    "Coluna para Filtrar:",
+                    options=available_cols,
+                    index=filt_idx
+                )
+                sel_filter_val = st.text_input(
+                    "Filtrar por esse valor (contendo):",
+                    value="Negativo"
+                )
+        else:
+            st.caption("Mapeamento dinâmico indisponível em colagem manual (usa campo único de texto).")
+            
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Filtros e Canais Ativos
+        st.markdown('<div class="section-box">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Canais Ativos</div>', unsafe_allow_html=True)
+        
+        active_tw = st.toggle("Twitter / X", value=True)
+        active_fb = st.toggle("Facebook", value=True)
+        active_ig = st.toggle("Instagram", value=True)
+        active_tk = st.toggle("TikTok", value=True)
+        active_yt = st.toggle("YouTube", value=True)
+        active_lk = st.toggle("LinkedIn", value=True)
+        
+        active_platforms = {
+            'twitter': active_tw,
+            'facebook': active_fb,
+            'instagram': active_ig,
+            'tiktok': active_tk,
+            'youtube': active_yt,
+            'linkedin': active_lk,
+            'others': True
+        }
+        
+        st.write("---")
+        preemptive_remove_linkedin = st.checkbox(
+            "Ignorar URLs do LinkedIn antes do filtro", 
+            value=True,
+            help="Descarta preventivamente links de linkedin.com para aliviar tamanho de query booleana."
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    with col_right:
+        # Preencher DataFrame inicial de trabalho
+        df_work = pd.DataFrame()
+        
+        if input_type == "Colar links diretamente (Mais rápido)":
+            if raw_text_links:
+                lines = [l.strip() for l in raw_text_links.split('\n') if l.strip()]
+                df_work = pd.DataFrame({'URL': lines})
+                sel_url_col = 'URL'
+        else:
+            if uploaded_df is not None:
+                df_work = uploaded_df.copy()
+                
+        # Começar o processamento
+        if not df_work.empty:
+            total_linhas_iniciais = len(df_work)
+            
+            # Aplicar filtro de LinkedIn preemptivo
+            if preemptive_remove_linkedin and sel_url_col in df_work.columns:
+                df_work = df_work[~df_work[sel_url_col].astype(str).str.lower().str.contains('linkedin.com', na=False)]
+                
+            # Aplicar filtro de valor se habilitado
+            if sel_filter_col and sel_filter_val:
+                df_work = df_work[df_work[sel_filter_col].astype(str).str.contains(sel_filter_val, case=False, na=False)]
+                
+            total_linhas_filtradas = len(df_work)
+            
+            # Rodar extrator de IDs
+            rows_processed = []
+            ids_unicos = []
+            
+            for idx, row in df_work.iterrows():
+                url_val = str(row.get(sel_url_col, "")).strip()
+                if not url_val or url_val.lower() == 'nan':
+                    continue
+                    
+                post_id, platform, is_valid = extrair_id_da_url(url_val, active_platforms)
+                
+                status_txt = "Sucesso" if is_valid else "Não identificado/Descartado"
+                
+                rows_processed.append({
+                    'URL_Original': url_val,
+                    'ID_Extraido': post_id if is_valid else "",
+                    'Canal': platform,
+                    'Resultado': status_txt,
+                    'Valido': is_valid
+                })
+                
+                if is_valid and post_id not in ids_unicos:
+                    ids_unicos.append(post_id)
+                    
+            df_results = pd.DataFrame(rows_processed)
+            total_ids_extraidos = len(df_results[df_results['Valido'] == True]) if not df_results.empty else 0
+            total_ids_unicos = len(ids_unicos)
+            
+            # Exibir Métricas idênticas à UI do React
             st.markdown(f"""
-            <div style="background-color:#0A0400;color:#FEFF00;padding:6px 12px;border-top-left-radius:6px;border-top-right-radius:6px;font-size:12px;font-weight:bold;margin-top:10px;">
-                🟢 PARTE {index + 1} de {len(chunks_queries)} &middot; {part_matches} IDs &middot; {len(query_text)}/4096 caracteres
+            <div class="metrics-container">
+                <div class="metric-card-styled">
+                    <div class="metric-val-num">{total_linhas_iniciais}</div>
+                    <div class="metric-lbl-text">LINHAS TOTAIS</div>
+                </div>
+                <div class="metric-card-styled">
+                    <div class="metric-val-num">{total_linhas_filtradas}</div>
+                    <div class="metric-lbl-text">FILTRADAS/ATIVAS</div>
+                </div>
+                <div class="metric-card-styled">
+                    <div class="metric-val-num">{total_ids_extraidos}</div>
+                    <div class="metric-lbl-text">IDS EXTRAÍDOS</div>
+                </div>
+                <div class="metric-card-styled">
+                    <div class="metric-val-num">{total_ids_unicos}</div>
+                    <div class="metric-lbl-text">IDS ÚNICOS</div>
+                </div>
             </div>
             """, unsafe_allow_html=True)
-            st.code(query_text, language="sql")
             
-        # Baixar todas as queries unificadas
-        compiled_queries_str = "\n\n".join(chunks_queries)
-        st.download_button(
-            label="💾 Baixar todas as queries (.txt)",
-            data=compiled_queries_str,
-            file_name="query_inurls_formatada_completa.txt",
-            mime="text/plain"
-        )
-    else:
-        st.info("Nenhum link ativo ou ID válido localizado para montagem do termo booleano. Por favor, verifique se selecionou a coluna certa e se os canais desejados estão ativos.")
-        
-    # =============================================================================
-    # PREVIEW DA TABELA DE EXTRAÇÃO
-    # =============================================================================
-    st.write("---")
-    st.markdown("### 📋 4. Visualização de Links e Identificadores Processados")
+            # Geração das Queries Limitadas a 4096 caracteres
+            st.markdown("### Resultado da Query Sintetizada")
+            
+            chunks_queries = []
+            current_chunk = []
+            current_length = 8  # comprimento de prefixo 'inurls:('
+            
+            for x in ids_unicos:
+                formatted_id = f'"{x}"' if '-' in x else x
+                addition_length = (4 + len(formatted_id)) if len(current_chunk) > 0 else len(formatted_id)
+                
+                if current_length + addition_length + 1 > 4096:
+                    if len(current_chunk) > 0:
+                        chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
+                        current_chunk = [formatted_id]
+                        current_length = 8 + len(formatted_id)
+                    else:
+                        chunks_queries.append("inurls:(" + formatted_id + ")")
+                        current_chunk = []
+                        current_length = 8
+                else:
+                    current_chunk.append(formatted_id)
+                    current_length += addition_length
+                    
+            if len(current_chunk) > 0:
+                chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
+                
+            if chunks_queries:
+                if len(chunks_queries) > 1:
+                    st.warning(f"Aviso: Visto que a quantidade excede o limite máximo de caracteres no monitoramento, geramos {len(chunks_queries)} blocos de queries autocontidas automaticamente.")
+                    
+                for idx, query in enumerate(chunks_queries):
+                    sub_ids_count = len(query.replace("inurls:(", "").replace(")", "").split(" OR "))
+                    
+                    st.markdown(f"""
+                    <div style="background-color: #0A0400; color: #FEFF00; padding: 6px 12px; border-radius: 6px 6px 0 0; font-size: 11px; font-weight: 900; margin-top: 15px; text-transform: uppercase;">
+                        Query Parte {idx+1} de {len(chunks_queries)} &middot; {sub_ids_count} IDs &middot; {len(query)}/4096 caracteres
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.code(query, language="sql")
+                    
+                # Download das queries formatadas em arquivo TXT único
+                txt_compilation = "\n\n".join(chunks_queries)
+                st.download_button(
+                    label="BAIXAR BLOCOS DE QUERY (TXT)",
+                    data=txt_compilation,
+                    file_name="burson_queries_geradas.txt",
+                    mime="text/plain"
+                )
+            else:
+                st.info("Nenhum ID social identificado para agrupar na query booleana.")
+                
+            # Tabela de Preview idêntica à do React
+            st.write("---")
+            st.markdown("### Preview dos Links e Identificadores")
+            
+            if not df_results.empty:
+                df_rendered = df_results.copy()
+                df_rendered['Canal'] = df_rendered['Canal'].apply(lambda x: x.upper() if isinstance(x, str) else x)
+                st.dataframe(
+                    df_rendered[['URL_Original', 'ID_Extraido', 'Canal', 'Resultado']], 
+                    use_container_width=True,
+                    hide_index=True
+                )
+                
+                # Download de Planilha de IDs Isolados integrada
+                csv_buffer = io.StringIO()
+                df_rendered.to_csv(csv_buffer, index=False, encoding='utf-8-sig', sep=';')
+                st.download_button(
+                    label="BAIXAR RELATÓRIO COMPLETO (CSV)",
+                    data=csv_buffer.getvalue(),
+                    file_name="cleanquery_relatorio_ids_isolados.csv",
+                    mime="text/csv"
+                )
+        else:
+            st.info("Comece inserindo URLs válidas ou carregando planilhas na barra lateral esquerda para iniciar o monitoramento em tempo real.")
+
+with tab_python:
+    st.markdown("""
+    ### Código Python Automatizado para rodar localmente (VS Code)
+    Este script automatiza o fluxo nativamente utilizando as bibliotecas do sistema. Ele faz o processamento local de planilhas.
+    """)
     
-    if len(df_results_full) > 0:
-        # Formatar tabela simplificada para preview
-        df_preview = df_results_full[['URL_Original', 'ID_Extraido', 'Canal', 'Resultado']].copy()
-        st.dataframe(df_preview, use_container_width=True, hide_index=True)
+    python_script_text = """# -*- coding: utf-8 -*-
+import pandas as pd
+import re
+from urllib.parse import urlparse, parse_qs
+
+# CONFIGURAÇÕES DO SCRIPT
+ARQUIVO_ENTRADA = "Mencoes_Maio.xlsx"  # Altere para o seu nome de planilha
+COLUNA_URL = "URL"                     # Coluna contendo os links
+COLUNA_FILTRO = "Sentimento"           # Coluna para filtro adicional (opcional)
+VALOR_FILTRO = "Negativo"              # Valor a filtrar (ou deixe None para desativar)
+REMOVER_LINKEDIN = True                # Ignorar LinkedIn automaticamente
+
+def extrair_id_social(url):
+    if not isinstance(url, str) or not url.strip():
+        return None
+    url = url.strip()
+    
+    # Twitter / X
+    if "twitter.com" in url or "x.com" in url:
+        m = re.search(r'(?:twitter\\.com|x\\.com)/[^/]+/status/(\\d+)', url, re.IGNORECASE) or re.search(r'/(\\d+)/?(?:\\?|$)', url)
+        return m.group(1) if m else None
         
-        # Botão para baixar relatório CSV completo
-        csv_buffer = io.StringIO()
-        df_results_full.to_csv(csv_buffer, index=False, encoding='utf-8-sig', sep=';')
+    # Facebook
+    elif "facebook.com" in url:
+        m = re.search(r'/(\\d{6,25})(?:\\?|#|$)', url.rstrip('/')) or re.search(r'/posts/(\\d+)', url, re.IGNORECASE)
+        if m: return m.group(1)
+        try:
+            qs = parse_qs(urlparse(url).query)
+            for p in ['story_fbid', 'fbid', 'id']:
+                if p in qs and qs[p]: return qs[p][0]
+        except: pass
         
-        st.download_button(
-            label="📥 Baixar Planilha Completa de IDs Extraídos (CSV)",
-            data=csv_buffer.getvalue(),
-            file_name="cleanquery_relatorio_ids_processados.csv",
-            mime="text/csv"
-        )
-    else:
-        st.caption("Sem linhas disponíveis para preview.")
+    # Instagram
+    elif "instagram.com" in url:
+        m = re.search(r'instagram\\.com/(?:p|reel|tv)/([^/?]+)', url, re.IGNORECASE) or re.search(r'instagram\\.com/[^/]+/(?:p|reel|tv)/([^/?]+)', url, re.IGNORECASE)
+        return m.group(1) if m else None
+        
+    # TikTok
+    elif "tiktok.com" in url:
+        m = re.search(r'tiktok\\.com/@[^/]+/video/(\\d+)', url, re.IGNORECASE) or re.search(r'tiktok\\.com/t/([^/?]+)', url, re.IGNORECASE) or re.search(r'vm\\.tiktok\\.com/([^/?]+)', url, re.IGNORECASE)
+        return m.group(1) if m else None
+        
+    # YouTube
+    elif "youtube.com" in url or "youtu.be" in url:
+        m = re.search(r'v=([^&#?]+)', url, re.IGNORECASE) or re.search(r'youtu\\.be/([^/?]+)', url, re.IGNORECASE)
+        return m.group(1) if m else None
+        
+    # LinkedIn
+    elif "linkedin.com" in url:
+        m = re.search(r'urn:li:activity:(\\d+)', url, re.IGNORECASE) or re.search(r'/(\\d+)/?(?:\\?|$)', url)
+        return m.group(1) if m else None
+        
+    # Fallback Numérico
+    m = re.search(r'/(\\d{6,25})/?(?:\\?|#|$)', url) or re.search(r'(?:^|/|\\D)(\\d{8,25})(?:\\D|$)', url)
+    return m.group(1) if m else None
+
+def main():
+    print("[...] Carregando dados do relatório de entrada...")
+    try:
+        if ARQUIVO_ENTRADA.endswith('.csv'):
+            df = pd.read_csv(ARQUIVO_ENTRADA, sep=';', encoding='utf-8-sig')
+        else:
+            df = pd.read_excel(ARQUIVO_ENTRADA)
+    except Exception as e:
+        print(f"[❌] Erro ao carregar arquivo de entrada: {e}")
+        return
+        
+    # Aplicar Filtros
+    if REMOVER_LINKEDIN and COLUNA_URL in df.columns:
+        df = df[~df[COLUNA_URL].astype(str).str.lower().str.contains('linkedin', na=False)]
+        
+    if COLUNA_FILTRO and VALOR_FILTRO and COLUNA_FILTRO in df.columns:
+        df = df[df[COLUNA_FILTRO].astype(str).str.contains(VALOR_FILTRO, case=False, na=False)]
+        
+    # Extrair IDs
+    ids_unicos = []
+    for url in df[COLUNA_URL].dropna():
+        post_id = extrair_id_social(url)
+        if post_id and post_id not in ids_unicos:
+            ids_unicos.append(post_id)
+            
+    print(f"[✓] IDs Únicos Extraídos: {len(ids_unicos)}")
+    
+    # Gerar blocos de queries com operador inurls:(...) e limite de 4096 caracteres
+    chunks = []
+    curr_chunk = []
+    curr_len = 8 # 'inurls:('
+    
+    for x in ids_unicos:
+        formatted = f'"{x}"' if '-' in x else x
+        add_len = (4 + len(formatted)) if len(curr_chunk) > 0 else len(formatted)
+        
+        if curr_len + add_len + 1 > 4096:
+            if curr_chunk:
+                chunks.append("inurls:(" + " OR ".join(curr_chunk) + ")")
+                curr_chunk = [formatted]
+                curr_len = 8 + len(formatted)
+            else:
+                chunks.append("inurls:(" + formatted + ")")
+                curr_chunk = []
+                curr_len = 8
+        else:
+            curr_chunk.append(formatted)
+            curr_len += add_len
+            
+    if curr_chunk:
+        chunks.append("inurls:(" + " OR ".join(curr_chunk) + ")")
+        
+    for i, q in enumerate(chunks):
+        print(f"\\n--- QUERY BLOCKED PARTE {i+1} ({len(q)} caracteres) ---")
+        print(q)
+        
+    with open("query_monitoramento_resultado.txt", "w", encoding="utf-8") as f:
+        f.write("\\n\\n".join(chunks))
+    print("\\n[✓] Queries salvas em 'query_monitoramento_resultado.txt' com sucesso!")
+
+if __name__ == "__main__":
+    main()
+"""
+    st.code(python_script_text, language="python")
+    st.download_button(
+        label="BAIXAR SCRIPT PYTHON (.py)",
+        data=python_script_text,
+        file_name="cleanquery_run.py",
+        mime="text/plain"
+    )
+    
+    st.markdown("""
+    #### Como Executar Localmente no VS Code:
+    1. Certifique-se de instalar as dependências necessárias executando:
+       ```bash
+       pip install pandas openpyxl
+       ```
+    2. Coloque a sua planilha local no mesmo diretório em que colocará esse script Python.
+    3. Edite as variáveis de mapeamento como `ARQUIVO_ENTRADA` e `COLUNA_URL` no topo do código caso precise.
+    4. Execute o programa usando o console:
+       ```bash
+       python cleanquery_run.py
+       ```
+    5. O arquivo `query_monitoramento_resultado.txt` será criado de forma 100% higienizada e pronta para ser utilizado!
+    """)
