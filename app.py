@@ -3,8 +3,9 @@
 =============================================================================
 CLEANQUERY - STREAMLIT WEB APP
 =============================================================================
-Este arquivo implementa uma versão interativa em Streamlit da plataforma
-CleanQuery para facilitar a distribuição e o uso direto na nuvem (Streamlit Cloud).
+Este arquivo implementa a versão oficial interativa em Streamlit do
+Social Media Query Creator. Oferece o mesmo visual sofisticado e o fluxo
+completo da aplicação React, incluindo colagem de links e upload de arquivos.
 =============================================================================
 """
 
@@ -16,101 +17,192 @@ import io
 
 # Configuração da página do Streamlit
 st.set_page_config(
-    page_title="CleanQuery - Extrator de IDs & Query Booleana",
+    page_title="Social Media Query Creator - Burson",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Estilo personalizado para ficar idêntico ao design sofisticado do React (Slate / Amarelo Burson)
+# Estilo personalizado para refletir o luxuoso design corporativo Burson (Slate escuro, amarelo brilhante e off-white)
 st.markdown("""
 <style>
-    /* Estilo geral */
-    .main .block-container {
-        padding-top: 3rem;
-        padding-bottom: 3rem;
+    /* Configurações Gerais de Fundo e Layout */
+    .stApp {
+        background-color: #FFFFF1;
     }
     
-    /* Cabeçalhos estilizados */
+    /* Fontes e Cabeçalhos corporativos */
+    h1, h2, h3, .brand-title {
+        color: #0A0400 !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    
     .brand-title {
-        font-family: 'Inter', sans-serif;
-        font-size: 2.2rem;
+        font-size: 2.1rem;
+        font-weight: 900;
+        letter-spacing: -1.2px;
+        text-transform: uppercase;
+        margin-bottom: 0.1rem;
+        border-bottom: 3px solid #FEFF00;
+        display: inline-block;
+        padding-bottom: 0.2rem;
+    }
+    
+    .brand-subtitle {
+        color: #555c68;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 1.8rem;
+    }
+    
+    /* Estilização de Cartões de Métricas */
+    .metric-card {
+        background-color: #ffffff;
+        border: 1px solid #e1e8f0;
+        border-left: 5px solid #0A0400;
+        border-radius: 6px;
+        padding: 1.1rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.01);
+        text-align: center;
+    }
+    .metric-val {
+        font-size: 1.8rem;
         font-weight: 900;
         color: #0A0400;
-        margin-bottom: 0.2rem;
-        letter-spacing: -1.5px;
-        text-transform: uppercase;
+        margin: 0;
+        line-height: 1.1;
     }
-    .brand-subtitle {
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        color: #555c68;
-        margin-bottom: 2rem;
-    }
-    
-    /* Stats */
-    .stat-card {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1.25rem;
-        text-align: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-    }
-    .stat-val {
-        font-size: 1.75rem;
-        font-weight: 800;
-        color: #0A0400;
-    }
-    .stat-label {
-        font-size: 0.75rem;
+    .metric-label {
+        font-size: 0.7rem;
         color: #64748b;
         text-transform: uppercase;
-        font-weight: 700;
-        letter-spacing: 0.5px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        margin-top: 0.3rem;
     }
     
-    /* Query Box */
-    .query-header {
-        background-color: #0A0400;
-        color: #FEFF00;
-        font-weight: 900;
-        padding: 0.75rem 1.25rem;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    /* Customização dos botões e alertas do Streamlit */
+    div.stButton > button {
+        background-color: #0A0400 !important;
+        color: #FEFF00 !important;
+        font-weight: 800 !important;
+        border: none !important;
+        border-radius: 4px !important;
+        padding: 0.5rem 1.25rem !important;
+        text-transform: uppercase !important;
+        font-size: 0.8rem !important;
+        letter-spacing: 0.5px !important;
+        transition: all 0.15s ease-in-out !important;
     }
-    
-    .query-box-part {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    
-    .query-box-title {
-        font-size: 0.8rem;
-        font-weight: 850;
-        color: #0F172A;
-        text-transform: uppercase;
-        border-bottom: 1px solid #f1f5f9;
-        padding-bottom: 0.5rem;
-        margin-bottom: 0.75rem;
-        display: flex;
-        gap: 0.5rem;
+    div.stButton > button:hover {
+        background-color: #222222 !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
+# SAMPLE DATA SET EXACTLY REPLICATING /src/data.ts
+SAMPLE_ROWS = [
+    {
+        'Data': '29/05/2026',
+        'Canal': 'Facebook',
+        'Autor': 'Ana Silva',
+        'URL': 'https://www.facebook.com/703877341748998/posts/1459573502846041',
+        'Sentimento': 'Negativo',
+        'Tags': 'Crise, Atendimento'
+    },
+    {
+        'Data': '29/05/2026',
+        'Canal': 'Twitter/X',
+        'Autor': 'Estadão E-Investidor',
+        'URL': 'http://twitter.com/EInvestidor/status/2036442951404933226',
+        'Sentimento': 'Negativo',
+        'Tags': 'Crise, Mercado'
+    },
+    {
+        'Data': '28/05/2026',
+        'Canal': 'Instagram',
+        'Autor': 'Felipe Santos',
+        'URL': 'https://www.instagram.com/p/C7X3x1uuW8z/',
+        'Sentimento': 'Positivo',
+        'Tags': 'Campanha, Influenciador'
+    },
+    {
+        'Data': '28/05/2026',
+        'Canal': 'Instagram',
+        'Autor': 'Mariana Souza',
+        'URL': 'https://www.instagram.com/reel/C8AbCdEfGhI/',
+        'Sentimento': 'Negativo',
+        'Tags': 'Reclamação, Qualidade'
+    },
+    {
+        'Data': '27/05/2026',
+        'Canal': 'TikTok',
+        'Autor': 'Estadão Notícias',
+        'URL': 'https://www.tiktok.com/@estadao/video/7352345678912345678',
+        'Sentimento': 'Negativo',
+        'Tags': 'Crise, Marcas'
+    },
+    {
+        'Data': '26/05/2026',
+        'Canal': 'YouTube',
+        'Autor': 'Canal Tech News',
+        'URL': 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        'Sentimento': 'Neutro',
+        'Tags': 'Review, Informativo'
+    },
+    {
+        'Data': '26/05/2026',
+        'Canal': 'Twitter/X',
+        'Autor': 'Gabriel Pace',
+        'URL': 'https://x.com/GloboNews/status/1789234567891234567',
+        'Sentimento': 'Negativo',
+        'Tags': 'Política'
+    },
+    {
+        'Data': '25/05/2026',
+        'Canal': 'Notícias',
+        'Autor': 'G1 Globo',
+        'URL': 'https://g1.globo.com/politica/noticia/2026/05/29/materia.html',
+        'Sentimento': 'Neutro',
+        'Tags': 'Imprensa'
+    },
+    {
+        'Data': '24/05/2026',
+        'Canal': 'LinkedIn',
+        'Autor': 'Executivo Exemplo',
+        'URL': 'https://www.linkedin.com/feed/update/urn:li:activity:7123456789123456789/',
+        'Sentimento': 'Positivo',
+        'Tags': 'Institucional'
+    },
+    {
+        'Data': '24/05/2026',
+        'Canal': 'LinkedIn',
+        'Autor': 'Especialista Burson',
+        'URL': 'https://www.linkedin.com/posts/gabriel-pace-123456',
+        'Sentimento': 'Neutro',
+        'Tags': 'Comunicação'
+    },
+    {
+        'Data': '23/05/2026',
+        'Canal': 'Instagram',
+        'Autor': 'Itatiaia Oficial',
+        'URL': 'https://www.instagram.com/itatiaiaoficial/p/DVbUsaklPnE/',
+        'Sentimento': 'Negativo',
+        'Tags': 'Rádio, Notícias'
+    },
+    {
+        'Data': '22/05/2026',
+        'Canal': 'Facebook',
+        'Autor': 'Rádio Itatiaia',
+        'URL': 'https://www.facebook.com/radioitatiaia/posts/amazon-conecta-2026-re%C3%BAne-15-mil-vendedores-para-capacita%C3%A7%C3%A3o-em-s%C3%A3o-pauloclique-/1468483525305135/',
+        'Sentimento': 'Negativo',
+        'Tags': 'Rádio, Patrocínio'
+    }
+]
 
 # =============================================================================
-# EXTRACTOR CORE LOGIC (Python version of urlParser.ts)
+# EXTRACTOR CORE LOGIC (Python matching /src/utils/urlParser.ts exactly)
 # =============================================================================
 def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
     """
@@ -248,99 +340,27 @@ def extrair_id_da_url(url: str, active_platforms: dict) -> tuple:
 
 
 # =============================================================================
-# INTERFACE DO USUÁRIO
+# LAYOUT & INTERFACE DO USUÁRIO STREAMLIT
 # =============================================================================
 
-# Cabeçalho da Marca
-st.markdown('<div class="brand-title">🔍 CLEANQUERY CLIENT</div>', unsafe_allow_html=True)
-st.markdown('<div class="brand-subtitle">Extrator De IDs de Redes Sociais com Sintetizador de Query Limitada (4096 caracteres)</div>', unsafe_allow_html=True)
+st.markdown('<div class="brand-title">🔍 BURSON QUERY GENERATOR</div>', unsafe_allow_html=True)
+st.markdown('<div class="brand-subtitle">Extrator de IDs Higienizados & Gerador de Query Booleana com Limitador de 4096 Caracteres</div>', unsafe_allow_html=True)
 
-# Organização em duas colunas principais
-col_config, col_results = st.columns([1, 2], gap="large")
-
-# Estado inicial da aplicação
-if 'uploaded_data' not in st.session_state:
-    st.session_state['uploaded_data'] = None
-
-with col_config:
-    st.subheader("🛠️ Configurações de Entrada")
+# Divisão de Colunas: Barra Lateral de Configurações & Painel Principal
+with st.sidebar:
+    st.markdown("### 🛠️ CONFIGURAÇÕES ")
     
-    # Upload do arquivo excel ou csv
-    uploaded_file = st.file_uploader(
-        "Carregue seu relatório ou planilha (.xlsx, .csv)", 
-        type=["xlsx", "csv"],
-        help="A planilha deve conter uma coluna com links de redes sociais."
+    # 1. Escolha do Método de Entrada dos Dados (Exatamente igual ao React)
+    input_method = st.radio(
+        "Selecione o método de entrada:",
+        ["Colar links diretamente (Mais rápido)", "Carregar planilha .xlsx / .csv", "Testar com dados de exemplo"],
+        index=0
     )
     
-    if uploaded_file is not None:
-        try:
-            # Carregar dados
-            if uploaded_file.name.endswith('.csv'):
-                df_loaded = pd.read_csv(uploaded_file)
-            else:
-                df_loaded = pd.read_excel(uploaded_file, engine='openpyxl')
-                
-            st.session_state['uploaded_data'] = df_loaded
-            st.toast("⚡ Arquivo carregado com sucesso!", icon="✅")
-        except Exception as e:
-            st.error(f"Erro ao ler o arquivo: {e}")
-            st.session_state['uploaded_data'] = None
-
-    # Tabela com as colunas carregadas se existirem
-    if st.session_state['uploaded_data'] is not None:
-        df = st.session_state['uploaded_data']
-        cols = list(df.columns)
-        
-        # 1. Identificar coluna de URLs
-        url_col_idx = 0
-        for i, col in enumerate(cols):
-            if col.lower() in ['url', 'link', 'mencion', 'menção', 'endereco', 'endereço']:
-                url_col_idx = i
-                break
-                
-        selected_url_col = st.selectbox(
-            "Selecione a coluna de URLs:",
-            options=cols,
-            index=url_col_idx,
-            help="Esta coluna contém os links de onde extrairemos os IDs."
-        )
-        
-        # 2. Configurações do Filtro
-        st.write("---")
-        st.markdown("**📁 Filtrar Registros**")
-        
-        use_filter = st.checkbox("Habilitar filtro por coluna (ex: Sentimento = Negativo)", value=True)
-        
-        filter_col_idx = 0
-        for i, col in enumerate(cols):
-            if col.lower() == 'sentimento':
-                filter_col_idx = i
-                break
-                
-        selected_filter_col = st.selectbox(
-            "Filtrar por coluna:",
-            options=cols,
-            index=filter_col_idx,
-            disabled=not use_filter
-        )
-        
-        filter_value = st.text_input(
-            "Contendo o valor:",
-            value="Negativo",
-            disabled=not use_filter
-        )
-        
-    else:
-        st.info("💡 Carregue uma planilha no botão acima para definir colunas e filtros.")
-        selected_url_col = None
-        use_filter = False
-        selected_filter_col = None
-        filter_value = "Negativo"
-
-    # 3. Plataformas Ativas
     st.write("---")
-    st.markdown("**🌐 Redes Sociais Ativas**")
     
+    # 2. Seleção de Redes Sociais Ativas (Multi-toggles)
+    st.markdown("**🌐 Canais Ativos para Monitorizar**")
     active_twitter = st.toggle("Twitter / X", value=True)
     active_facebook = st.toggle("Facebook", value=True)
     active_instagram = st.toggle("Instagram", value=True)
@@ -356,168 +376,282 @@ with col_config:
         'youtube': active_youtube,
         'linkedin': active_linkedin
     }
-
-# Lado Direito - Resultados e processamento
-with col_results:
-    st.subheader("📊 Resultados de Extração & Queries")
     
-    if st.session_state['uploaded_data'] is not None:
-        df = st.session_state['uploaded_data']
-        
-        # Filtrar o DataFrame
-        if use_filter and selected_filter_col:
-            df_filtered = df[df[selected_filter_col].astype(str).str.contains(filter_value, case=False, na=False)].copy()
-            total_orig = len(df)
-            total_filt = len(df_filtered)
-        else:
-            df_filtered = df.copy()
-            total_orig = len(df)
-            total_filt = len(df_filtered)
-            
-        # Processar
-        rows_processed = []
-        ids_unicos = []
-        
-        for idx, row in df_filtered.iterrows():
-            url_val = str(row[selected_url_col])
-            post_id, platform, is_valid = extrair_id_da_url(url_val, active_platforms)
-            
-            status = "Sucesso" if is_valid else "Bloqueada"
-            
-            rows_processed.append({
-                'URL_Original': url_val,
-                'ID_Extraido': post_id if is_valid else "",
-                'Canal': platform.capitalize() if platform != 'others' else 'Outros',
-                'Status': status,
-                'Valido': is_valid
-            })
-            
-            if is_valid and post_id not in ids_unicos:
-                ids_unicos.append(post_id)
-                
-        df_results_full = pd.DataFrame(rows_processed)
-        df_success = df_results_full[df_results_full['Valido'] == True]
-        
-        # Exibir Cards de Métricas
-        m_col1, m_col2, m_col3 = st.columns(3)
-        with m_col1:
-            st.markdown(f"""
-            <div class="stat-card">
-                <div class="stat-val">{total_filt} / {total_orig}</div>
-                <div class="stat-label">linhas após filtro</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with m_col2:
-            st.markdown(f"""
-            <div class="stat-card">
-                <div class="stat-val">{len(df_success)}</div>
-                <div class="stat-label">IDs Extraídos</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with m_col3:
-            st.markdown(f"""
-            <div class="stat-card">
-                <div class="stat-val">{len(ids_unicos)}</div>
-                <div class="stat-label">IDs Únicos</div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-        st.write("")
-        
-        # GERAÇÃO DAS QUERIES LIMITADAS A 4096 CARACTERES
-        chunks_queries = []
-        current_chunk = []
-        current_length = 8  # comprimento de 'inurls:('
-        
-        for x in ids_unicos:
-            formatted_id = f'"{x}"' if '-' in x else x
-            addition_length = (4 + len(formatted_id)) if len(current_chunk) > 0 else len(formatted_id)
-            
-            # Checar se ultrapassa 4096 caracteres
-            if current_length + addition_length + 1 > 4096:
-                if len(current_chunk) > 0:
-                    chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
-                    current_chunk = [formatted_id]
-                    current_length = 8 + len(formatted_id)
-                else:
-                    chunks_queries.append("inurls:(" + formatted_id + ")")
-                    current_chunk = []
-                    current_length = 8
+    st.write("---")
+    
+    # 3. Remover LinkedIn preventivamente (recurso do App React)
+    remove_linkedin_preemptive = st.checkbox("Remover links do LinkedIn", value=True, 
+                                            help="Quando marcado, descarta links de 'linkedin.com' automaticamente para diminuir o tamanho final da query.")
+
+    # 4. Bloco de ajuda para o Deploy no Streamlit Cloud
+    st.write("---")
+    with st.expander("🚀 Como publicar este app no seu GitHub?", expanded=False):
+        st.markdown("""
+        **Passo a passo simples:**
+        1. Crie uma conta gratuita em [github.com](https://github.com) se não tiver.
+        2. No canto superior direito, clique em **New Repository**.
+        3. Dê o nome de **`cleanquery-burson`** e marque como **Public**.
+        4. Suba ou crie os seguintes arquivos na raiz do repo:
+           - **`app.py`** (este mesmo arquivo)
+           - **`requirements.txt`** (contendo as bibliotecas necessárias)
+        5. Vá em [share.streamlit.io](https://share.streamlit.io), conecte seu GitHub e selecione este repositório.
+        6. Clique em **Deploy** e seu app estará no ar para qualquer colega usar!
+        """)
+
+# Inicializar os dados de acordo com o método de entrada escolhido
+df_origin = None
+url_column = "URL"
+use_filter = False
+filter_column = ""
+filter_value = ""
+
+if input_method == "Colar links diretamente (Mais rápido)":
+    st.markdown("### 📋 1. Cole seus links de redes sociais")
+    paste_content = st.text_area(
+        "Insira os links brutos (cole as linhas da coluna do Excel diretamente aqui, um link por linha):",
+        value="",
+        placeholder="https://www.facebook.com/703877341748998/posts/1459573502846041\nhttps://twitter.com/EInvestidor/status/2036442951404933226\nhttps://www.instagram.com/p/C7X3x1uuW8z/",
+        height=180
+    )
+    
+    if paste_content.strip():
+        # Converter linhas coladas em DataFrame
+        lines = [line.strip() for line in paste_content.split('\n') if line.strip()]
+        df_origin = pd.DataFrame({'URL': lines})
+        url_column = 'URL'
+    else:
+        st.info("👆 Cole alguns links de publicação acima para ver os IDs sendo extraídos instantaneamente!")
+
+elif input_method == "Carregar planilha .xlsx / .csv":
+    st.markdown("### 📁 1. Faça upload da planilha Excel ou CSV")
+    uploaded_file = st.file_uploader(
+        "Carregue seu relatório ou planilha (.xlsx ou .csv):",
+        type=["xlsx", "xls", "csv"],
+        help="A planilha deve ter uma coluna de links/URLs de redes sociais."
+    )
+    
+    if uploaded_file is not None:
+        try:
+            if uploaded_file.name.endswith('.csv'):
+                df_origin = pd.read_csv(uploaded_file)
             else:
-                current_chunk.append(formatted_id)
-                current_length += addition_length
+                df_origin = pd.read_excel(uploaded_file, engine='openpyxl')
                 
-        if len(current_chunk) > 0:
-            chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
+            st.toast("⚡ Planilha carregada e lida com sucesso!", icon="✅")
+        except Exception as e:
+            st.error(f"Erro ao ler o arquivo selecionado: {e}")
+            df_origin = None
             
-        # Exibição de Query Sintetizada
-        st.markdown("### 📝 Query Sintetizada")
+    if df_origin is not None:
+        # Configurações de coluna de URLs
+        cols = list(df_origin.columns)
         
-        if len(chunks_queries) > 0:
-            if len(chunks_queries) > 1:
-                st.warning(f"⚠️ A query excederia o limite máximo de 4096 caracteres. Geramos **{len(chunks_queries)} queries completas** de forma inteligente!")
+        # Tentar auto-identificar coluna 'URL'
+        url_idx = 0
+        for i, col in enumerate(cols):
+            if col.lower() in ['url', 'link', 'mencion', 'menção', 'endereco', 'endereço']:
+                url_idx = i
+                break
                 
-            for index, query_text in enumerate(chunks_queries):
-                matches_count = len(query_text.replace("inurls:(", "").replace(")", "").split(" OR "))
-                
-                # Exibir Bloco de Query Pronta
-                st.markdown(f"""
-                <div class="query-box-part">
-                    <div class="query-box-title">
-                        🟢 Parte {index+1} de {len(chunks_queries)} &middot; {matches_count} IDs &middot; {len(query_text)}/4096 caracteres
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                st.text_area(f"Copiar Parte {index+1}", value=query_text, height=120, key=f"q_area_{index}")
-                
-            # Converter queries integradas para download
-            complete_queries_raw = "\n\n".join(chunks_queries)
-            st.download_button(
-                label="💾 Baixar Todas as Queries (.txt)",
-                data=complete_queries_raw,
-                file_name="cleanquery-todas-queries.txt",
-                mime="text/plain"
-            )
+        # Layout lado a lado para mapear as colunas
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            url_column = st.selectbox("Selecione a coluna de URLs:", options=cols, index=url_idx)
+            
+        with col_c2:
+            use_filter = st.checkbox("Aplicar filtro de coluna (ex: Sentimento = Negativo)", value=False)
+            
+        if use_filter:
+            # Mapear coluna de sentimento/filtragem
+            filter_idx = 0
+            for i, col in enumerate(cols):
+                if col.lower() in ['sentimento', 'sentiment', 'tag', 'status']:
+                    filter_idx = i
+                    break
+            
+            col_f1, col_f2 = st.columns(2)
+            with col_f1:
+                filter_column = st.selectbox("Filtrar pela coluna:", options=cols, index=filter_idx)
+            with col_f2:
+                filter_value = st.text_input("Contendo o valor:", value="Negativo")
+    else:
+        st.info("💡 Faça o upload de uma planilha para selecionar as colunas de URLs e configurar os filtros.")
+
+else: # Usar dados de exemplo
+    st.markdown("### 💡 1. Testando com dados de simulação Burson")
+    df_origin = pd.DataFrame(SAMPLE_ROWS)
+    url_column = 'URL'
+    
+    # Adicionar configuração de filtros padrão para que use como exemplo
+    col_c1, col_c2 = st.columns(2)
+    with col_c1:
+        st.info("Usando coluna padrão de links: **'URL'**.")
+    with col_c2:
+        use_filter = st.checkbox("Filtrar por sentimento na simulação", value=True)
+        
+    if use_filter:
+        filter_column = 'Sentimento'
+        filter_value = 'Negativo'
+        st.caption("Filtro Ativo: `Sentimento = Negativo`")
+
+
+# =============================================================================
+# EXECUTAR FILTRAGEM & EXTRAÇÃO DE IDs
+# =============================================================================
+if df_origin is not None:
+    # 1. Aplicar filtro preemptivo se configurado
+    df_working = df_origin.copy()
+    
+    # Se configurado para remover linkedin de forma preemptiva na varredura geral
+    if remove_linkedin_preemptive and url_column in df_working.columns:
+        # Filtrar fora links do linkedin
+        df_working = df_working[~df_working[url_column].astype(str).str.lower().str.contains('linkedin', na=False)]
+        
+    if use_filter and filter_column:
+        df_working = df_working[df_working[filter_column].astype(str).str.contains(filter_value, case=False, na=False)]
+        
+    # 2. Executar extração linha a linha
+    rows_processed = []
+    ids_unicos = []
+    
+    for idx, row in df_working.iterrows():
+        url_val = str(row.get(url_column, "")).strip()
+        
+        if not url_val or url_val.lower() == 'nan':
+            continue
+            
+        post_id, platform, is_valid = extrair_id_da_url(url_val, active_platforms)
+        
+        status = "Sucesso" if is_valid else "Não identificado/Bloqueado"
+        
+        rows_processed.append({
+            'URL_Original': url_val,
+            'ID_Extraido': post_id if is_valid else "",
+            'Canal': platform.capitalize() if platform != 'others' else 'Outros',
+            'Resultado': status,
+            'Valido': is_valid,
+            'Info': row.to_dict() # manter os metadados
+        })
+        
+        if is_valid and post_id not in ids_unicos:
+            ids_unicos.append(post_id)
+            
+    df_results_full = pd.DataFrame(rows_processed)
+    
+    # 3. Exibir Cartões de Métricas no topo dos Resultados
+    st.write("---")
+    st.markdown("### 📊 2. Métricas do Batch Processado")
+    
+    total_linhas_iniciais = len(df_origin)
+    total_linhas_filtradas = len(df_working)
+    total_sucesso = len(df_results_full[df_results_full['Valido'] == True]) if len(df_results_full) > 0 else 0
+    total_ids_unicos = len(ids_unicos)
+    
+    met_col1, met_col2, met_col3, met_col4 = st.columns(4)
+    with met_col1:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-val">{total_linhas_iniciais}</div>
+            <div class="metric-label">Linhas Totais</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with met_col2:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-val">{total_linhas_filtradas}</div>
+            <div class="metric-label">Linhas Selecionadas</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with met_col3:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-val">{total_sucesso}</div>
+            <div class="metric-label">IDs Extraídos</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with met_col4:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-val">{total_ids_unicos}</div>
+            <div class="metric-label">IDs Únicos</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    # =============================================================================
+    # GERAÇÃO QUERIES COM LIMITE INURLS:(...) ATÉ 4096 CARACTERES
+    # =============================================================================
+    st.write("")
+    st.markdown("### 📝 3. Query de Monitoramento Unificada")
+    
+    chunks_queries = []
+    current_chunk = []
+    current_length = 8  # comprimento de prefixo 'inurls:('
+    
+    for x in ids_unicos:
+        formatted_id = f'"{x}"' if '-' in x else x
+        addition_length = (4 + len(formatted_id)) if len(current_chunk) > 0 else len(formatted_id) # 4 por causa do " OR "
+        
+        # Checar se adicionar o elemento ultrapassar 4096 caracteres
+        if current_length + addition_length + 1 > 4096:
+            if len(current_chunk) > 0:
+                chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
+                current_chunk = [formatted_id]
+                current_length = 8 + len(formatted_id)
+            else:
+                chunks_queries.append("inurls:(" + formatted_id + ")")
+                current_chunk = []
+                current_length = 8
         else:
-            st.info("Nenhum link correspondente ou ID válido encontrado para gerar a query.")
+            current_chunk.append(formatted_id)
+            current_length += addition_length
             
-        # Preview dos dados extraídos
-        st.write("---")
-        st.markdown("### 📋 Tabela de Links e IDs Processados")
+    if len(current_chunk) > 0:
+        chunks_queries.append("inurls:(" + " OR ".join(current_chunk) + ")")
         
-        st.dataframe(
-            df_results_full[['URL_Original', 'ID_Extraido', 'Canal', 'Status']],
-            use_container_width=True,
-            hide_index=True
+    if len(chunks_queries) > 0:
+        if len(chunks_queries) > 1:
+            st.warning(f"⚠️ **Atenção:** Como o tamanho total ultrapassaria o limite de 4096 caracteres, geramos de forma automática **{len(chunks_queries)} queries independentes**, respeitando perfeitamente o operador!")
+            
+        for index, query_text in enumerate(chunks_queries):
+            part_matches = len(query_text.replace("inurls:(", "").replace(")", "").split(" OR "))
+            st.markdown(f"""
+            <div style="background-color:#0A0400;color:#FEFF00;padding:6px 12px;border-top-left-radius:6px;border-top-right-radius:6px;font-size:12px;font-weight:bold;margin-top:10px;">
+                🟢 PARTE {index + 1} de {len(chunks_queries)} &middot; {part_matches} IDs &middot; {len(query_text)}/4096 caracteres
+            </div>
+            """, unsafe_allow_html=True)
+            st.code(query_text, language="sql")
+            
+        # Baixar todas as queries unificadas
+        compiled_queries_str = "\n\n".join(chunks_queries)
+        st.download_button(
+            label="💾 Baixar todas as queries (.txt)",
+            data=compiled_queries_str,
+            file_name="query_inurls_formatada_completa.txt",
+            mime="text/plain"
         )
+    else:
+        st.info("Nenhum link ativo ou ID válido localizado para montagem do termo booleano. Por favor, verifique se selecionou a coluna certa e se os canais desejados estão ativos.")
+        
+    # =============================================================================
+    # PREVIEW DA TABELA DE EXTRAÇÃO
+    # =============================================================================
+    st.write("---")
+    st.markdown("### 📋 4. Visualização de Links e Identificadores Processados")
+    
+    if len(df_results_full) > 0:
+        # Formatar tabela simplificada para preview
+        df_preview = df_results_full[['URL_Original', 'ID_Extraido', 'Canal', 'Resultado']].copy()
+        st.dataframe(df_preview, use_container_width=True, hide_index=True)
         
         # Botão para baixar relatório CSV completo
         csv_buffer = io.StringIO()
         df_results_full.to_csv(csv_buffer, index=False, encoding='utf-8-sig', sep=';')
         
         st.download_button(
-            label="📥 Baixar Planilha de IDs Extinguidos (CSV)",
+            label="📥 Baixar Planilha Completa de IDs Extraídos (CSV)",
             data=csv_buffer.getvalue(),
-            file_name="cleanquery_relatorio_ids.csv",
+            file_name="cleanquery_relatorio_ids_processados.csv",
             mime="text/csv"
         )
-        
     else:
-        # Tela padrão fofa quando não há planilha carregada
-        st.write("")
-        st.write("")
-        st.info("👋 Olá! Por favor, faça upload de uma planilha Excel ou CSV na barra lateral ou na seção de configuração para ver os IDs de mídia social serem extraídos em tempo real e prontos para queries formatadas.")
-        
-        # Exemplo Simulado
-        st.markdown("### 💡 Exemplo de URLs Suportadas")
-        exemplo_dados = {
-            'URL de Exemplo': [
-                'https://www.instagram.com/itatiaiaoficial/p/DVbUsaklPnE/',
-                'https://www.facebook.com/radioitatiaia/posts/amazon-conecta-1468483525305135/',
-                'https://twitter.com/EInvestidor/status/2036442951404933226',
-                'https://youtu.be/dQw4w9WgXcQ'
-            ],
-            'ID Extraído': ['DVbUsaklPnE', '1468483525305135', '2036442951404933226', 'dQw4w9WgXcQ'],
-            'Canal': ['Instagram', 'Facebook', 'Twitter', 'YouTube']
-        }
-        st.table(pd.DataFrame(exemplo_dados))
+        st.caption("Sem linhas disponíveis para preview.")
