@@ -7,8 +7,8 @@ Este arquivo implementa a versão interativa em Streamlit da plataforma
 Social Media Query Creator para fidedignidade absoluta com o design de marca
 revelado no preview do React (Slate, Burson Yellow e Off-White).
 
-Removido abas secundárias a pedido do usuário, focando puramente na 
-experiência e refinamento do fluxo interativo principal.
+Removido abas secundárias, dados de simulação e ajustado o sistema de 
+caixas (section-box) retirando tags HTML fragmentadas que geravam caixas vazias.
 =============================================================================
 """
 
@@ -26,7 +26,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilização sob medida com CSS injetado de alto nível para casar exatamente com o design corporativo do React (off-white, slate escuro e amarelo Burson)
+# Estilização sob medida com CSS injetado de alto nível para casar exatamente com o design corporativo (off-white, slate escuro e amarelo Burson)
 st.markdown("""
 <style>
     /* Fundo geral moderno off-white e fontes do sistema */
@@ -38,7 +38,7 @@ st.markdown("""
         font-family: 'Inter', -apple-system, sans-serif !important;
     }
     
-    /* Configuração do Header com o mesmo estilo do React, utilizando a premissa de luxo Burson */
+    /* Configuração do Header com a premissa de luxo Burson */
     .b-header {
         background-color: #0A0400;
         color: #FFFFF1;
@@ -108,28 +108,17 @@ st.markdown("""
         vertical-align: middle;
     }
     
-    /* Configuração de Toggles e Filtros */
-    .section-box {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.01);
-    }
-    
-    .section-title {
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #0F172A;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border-bottom: 1px solid #f1f5f9;
-        padding-bottom: 0.5rem;
+    /* Títulos de Seção Internos estilizados no padrão Burson */
+    .b-section-header {
+        font-size: 0.8rem !important;
+        font-weight: 800 !important;
+        color: #0A0400 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        margin-top: 0px !important;
+        margin-bottom: 12px !important;
+        border-bottom: 2px solid #FEFF00 !important;
+        padding-bottom: 4px !important;
     }
     
     /* Cartões de Métricas elegantes com borda amarela Burson */
@@ -183,6 +172,7 @@ st.markdown("""
         letter-spacing: 0.5px !important;
         padding: 0.5rem 1.25rem !important;
         transition: all 0.15s ease-in-out !important;
+        width: 100% !important;
     }
     div.stButton > button:hover {
         background-color: #222222 !important;
@@ -199,111 +189,16 @@ st.markdown("""
         padding: 1rem 1.25rem;
         margin-bottom: 1.5rem;
     }
+
+    /* Estilização sutil para os widgets nativos de container do streamlit */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: #ffffff !important;
+        border-radius: 8px !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.01) !important;
+    }
 </style>
 """, unsafe_allow_html=True)
-
-
-# =============================================================================
-# REPLICAÇÃO DOS DADOS DO RELATÓRIO DO /src/data.ts
-# =============================================================================
-SAMPLE_ROW_DATA = [
-    {
-        'Data': '29/05/2026',
-        'Canal': 'Facebook',
-        'Autor': 'Ana Silva',
-        'URL': 'https://www.facebook.com/703877341748998/posts/1459573502846041',
-        'Sentimento': 'Negativo',
-        'Tags': 'Crise, Atendimento'
-    },
-    {
-        'Data': '29/05/2026',
-        'Canal': 'Twitter/X',
-        'Autor': 'Estadão E-Investidor',
-        'URL': 'http://twitter.com/EInvestidor/status/2036442951404933226',
-        'Sentimento': 'Negativo',
-        'Tags': 'Crise, Mercado'
-    },
-    {
-        'Data': '28/05/2026',
-        'Canal': 'Instagram',
-        'Autor': 'Felipe Santos',
-        'URL': 'https://www.instagram.com/p/C7X3x1uuW8z/',
-        'Sentimento': 'Positivo',
-        'Tags': 'Campanha, Influenciador'
-    },
-    {
-        'Data': '28/05/2026',
-        'Canal': 'Instagram',
-        'Autor': 'Mariana Souza',
-        'URL': 'https://www.instagram.com/reel/C8AbCdEfGhI/',
-        'Sentimento': 'Negativo',
-        'Tags': 'Reclamação, Qualidade'
-    },
-    {
-        'Data': '27/05/2026',
-        'Canal': 'TikTok',
-        'Autor': 'Estadão Notícias',
-        'URL': 'https://www.tiktok.com/@estadao/video/7352345678912345678',
-        'Sentimento': 'Negativo',
-        'Tags': 'Crise, Marcas'
-    },
-    {
-        'Data': '26/05/2026',
-        'Canal': 'YouTube',
-        'Autor': 'Canal Tech News',
-        'URL': 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        'Sentimento': 'Neutro',
-        'Tags': 'Review, Informativo'
-    },
-    {
-        'Data': '26/05/2026',
-        'Canal': 'Twitter/X',
-        'Autor': 'Gabriel Pace',
-        'URL': 'https://x.com/GloboNews/status/1789234567891234567',
-        'Sentimento': 'Negativo',
-        'Tags': 'Política'
-    },
-    {
-        'Data': '25/05/2026',
-        'Canal': 'Notícias',
-        'Autor': 'G1 Globo',
-        'URL': 'https://g1.globo.com/politica/noticia/2026/05/29/materia.html',
-        'Sentimento': 'Neutro',
-        'Tags': 'Imprensa'
-    },
-    {
-        'Data': '24/05/2026',
-        'Canal': 'LinkedIn',
-        'Autor': 'Executivo Exemplo',
-        'URL': 'https://www.linkedin.com/feed/update/urn:li:activity:7123456789123456789/',
-        'Sentimento': 'Positivo',
-        'Tags': 'Institucional'
-    },
-    {
-        'Data': '24/05/2026',
-        'Canal': 'LinkedIn',
-        'Autor': 'Especialista Burson',
-        'URL': 'https://www.linkedin.com/posts/gabriel-pace-123456',
-        'Sentimento': 'Neutro',
-        'Tags': 'Comunicação'
-    },
-    {
-        'Data': '23/05/2026',
-        'Canal': 'Instagram',
-        'Autor': 'Itatiaia Oficial',
-        'URL': 'https://www.instagram.com/itatiaiaoficial/p/DVbUsaklPnE/',
-        'Sentimento': 'Negativo',
-        'Tags': 'Rádio, Notícias'
-    },
-    {
-        'Data': '22/05/2026',
-        'Canal': 'Facebook',
-        'Autor': 'Rádio Itatiaia',
-        'URL': 'https://www.facebook.com/radioitatiaia/posts/amazon-conecta-2026-re%C3%BAne-15-mil-vendedores-para-capacita%C3%A7%C3%A3o-em-s%C3%A3o-pauloclique-/1468483525305135/',
-        'Sentimento': 'Negativo',
-        'Tags': 'Rádio, Patrocínio'
-    }
-]
 
 
 # =============================================================================
@@ -445,7 +340,7 @@ st.markdown("""
 
 
 # =============================================================================
-# INTERFACE INTERATIVA PRINCIPAL (SEM ABAS COADJUVANTES)
+# INTERFACE INTERATIVA PRINCIPAL
 # =============================================================================
 
 # Top Info Alert igual ao React
@@ -455,9 +350,9 @@ st.markdown("""
         Como funciona este fluxo interativo?
     </div>
     <div style="font-size: 0.775rem; color: #334155; line-height: 1.4;">
-        Este simulador reproduz o comportamento exato que o seu script realiza: ele pega as URLs,
-        aplica as condições de filtragem definidas, descarta links inválidos trazendo apenas os identificadores (IDs puros),
-        e agrupa-os na query booleana usando o operador <code>inurls:(...)</code> respeitando o limite máximo estrutural de 4096 caracteres.
+        Este simulador processa as URLs fornecidas, aplica as condições de filtragem selecionadas, 
+        extrai exclusivamente os IDs de canais ativos, descarta links inválidos e gera blocos de query 
+        higienizados no formato <code>inurls:(...)</code> respeitando o limite do monitoramento de 4096 caracteres.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -466,131 +361,119 @@ st.markdown("""
 col_left, col_right = st.columns([1, 2], gap="large")
 
 with col_left:
-    # Configuração de Entrada de Dados
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Origem dos Dados</div>', unsafe_allow_html=True)
-    
-    input_type = st.radio(
-        "Origem das URLs:",
-        [
-            "Colar links diretamente (Mais rápido)", 
-            "Carregar planilha de relatório (.xlsx, .csv)", 
-            "Carregar dados de simulação Burson"
-        ],
-        index=0
-    )
-    
-    raw_text_links = ""
-    uploaded_df = None
-    
-    if input_type == "Colar links diretamente (Mais rápido)":
-        raw_text_links = st.text_area(
-            "Cole seus links (um por linha):",
-            placeholder="https://www.instagram.com/p/C7X3x1uuW8z/\nhttps://twitter.com/EInvestidor/status/2036442951404933226\nhttps://www.facebook.com/radioitatiaia/posts/1468483525305135",
-            height=150
-        ).strip()
+    # 1. Container de Origem dos Dados
+    with st.container(border=True):
+        st.markdown('<div class="b-section-header">Origem dos Dados</div>', unsafe_allow_html=True)
         
-    elif input_type == "Carregar planilha de relatório (.xlsx, .csv)":
-        uploaded_file = st.file_uploader(
-            "Selecione uma planilha de menções:",
-            type=["xlsx", "xls", "csv"]
+        input_type = st.radio(
+            "Origem das URLs:",
+            [
+                "Colar links diretamente (Mais rápido)", 
+                "Carregar planilha de relatório (.xlsx, .csv)"
+            ],
+            index=0
         )
-        if uploaded_file is not None:
-            try:
-                if uploaded_file.name.endswith('.csv'):
-                    uploaded_df = pd.read_csv(uploaded_file)
-                else:
-                    uploaded_df = pd.read_excel(uploaded_file, engine='openpyxl')
-                st.success("Tabela carregada com sucesso!")
-            except Exception as e:
-                st.error(f"Erro ao analisar arquivo: {e}")
-        else:
-            st.info("Aguardando upload de planilha...")
+        
+        raw_text_links = ""
+        uploaded_df = None
+        
+        if input_type == "Colar links diretamente (Mais rápido)":
+            raw_text_links = st.text_area(
+                "Cole seus links (um por linha):",
+                placeholder="https://www.instagram.com/p/C7X3x1uuW8z/\nhttps://twitter.com/EInvestidor/status/2036442951404933226\nhttps://www.facebook.com/radioitatiaia/posts/1468483525305135",
+                height=180
+            ).strip()
             
-    else:
-        # Usar dados simulados
-        uploaded_df = pd.DataFrame(SAMPLE_ROW_DATA)
-        st.info("Demonstração ativa com as 12 menções padrão de amostra.")
+        elif input_type == "Carregar planilha de relatório (.xlsx, .csv)":
+            uploaded_file = st.file_uploader(
+                "Selecione uma planilha de menções:",
+                type=["xlsx", "xls", "csv"]
+            )
+            if uploaded_file is not None:
+                try:
+                    if uploaded_file.name.endswith('.csv'):
+                        uploaded_df = pd.read_csv(uploaded_file)
+                    else:
+                        uploaded_df = pd.read_excel(uploaded_file, engine='openpyxl')
+                    st.success("Tabela carregada com sucesso!")
+                except Exception as e:
+                    st.error(f"Erro ao analisar arquivo: {e}")
+            else:
+                st.info("Aguardando upload de planilha...")
+
+    # 2. Container de Mapeamento & Condições
+    with st.container(border=True):
+        st.markdown('<div class="b-section-header">Mapeamento & Condições</div>', unsafe_allow_html=True)
         
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Seleção de Colunas e Filtros
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Mapeamento & Condições</div>', unsafe_allow_html=True)
-    
-    sel_url_col = "URL"
-    sel_filter_col = ""
-    sel_filter_val = ""
-    
-    # Se temos uma tabela de entrada (seja carregada ou simulação)
-    if uploaded_df is not None:
-        available_cols = list(uploaded_df.columns)
+        sel_url_col = "URL"
+        sel_filter_col = ""
+        sel_filter_val = ""
         
-        # Tentar autodetectar URL
-        auto_idx = 0
-        for i, col in enumerate(available_cols):
-            if col.lower() in ['url', 'link', 'mencion', 'menção', 'endereco', 'endereço']:
-                auto_idx = i
-                break
-                
-        sel_url_col = st.selectbox(
-            "Coluna de URLs:",
-            options=available_cols,
-            index=auto_idx
-        )
-        
-        enable_conditions = st.checkbox("Aplicar filtragem interna por valor", value=False)
-        if enable_conditions:
-            # Tentar autodetectar sentimento
-            filt_idx = 0
+        # Se temos uma tabela de entrada
+        if uploaded_df is not None:
+            available_cols = list(uploaded_df.columns)
+            
+            # Tentar autodetectar URL
+            auto_idx = 0
             for i, col in enumerate(available_cols):
-                if col.lower() in ['sentimento', 'sentiment', 'tags', 'mídia', 'canal']:
-                    filt_idx = i
+                if col.lower() in ['url', 'link', 'mencion', 'menção', 'endereco', 'endereço']:
+                    auto_idx = i
                     break
                     
-            sel_filter_col = st.selectbox(
-                "Coluna para Filtrar:",
+            sel_url_col = st.selectbox(
+                "Coluna de URLs:",
                 options=available_cols,
-                index=filt_idx
+                index=auto_idx
             )
-            sel_filter_val = st.text_input(
-                "Filtrar por esse valor (contendo):",
-                value="Negativo"
-            )
-    else:
-        st.caption("Mapeamento dinâmico indisponível em colagem manual (usa campo único de texto).")
+            
+            enable_conditions = st.checkbox("Aplicar filtragem interna por valor", value=False)
+            if enable_conditions:
+                # Tentar autodetectar sentimento/tags
+                filt_idx = 0
+                for i, col in enumerate(available_cols):
+                    if col.lower() in ['sentimento', 'sentiment', 'tags', 'mídia', 'canal']:
+                        filt_idx = i
+                        break
+                        
+                sel_filter_col = st.selectbox(
+                    "Coluna para Filtrar:",
+                    options=available_cols,
+                    index=filt_idx
+                )
+                sel_filter_val = st.text_input(
+                    "Filtrar por esse valor (contendo):",
+                    value="Negativo"
+                )
+        else:
+            st.caption("Filtros por coluna disponíveis no upload de planilha.")
+
+    # 3. Container de Canais Ativos
+    with st.container(border=True):
+        st.markdown('<div class="b-section-header">Canais e Exclusões</div>', unsafe_allow_html=True)
         
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Filtros e Canais Ativos
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Canais Ativos</div>', unsafe_allow_html=True)
-    
-    active_tw = st.toggle("Twitter / X", value=True)
-    active_fb = st.toggle("Facebook", value=True)
-    active_ig = st.toggle("Instagram", value=True)
-    active_tk = st.toggle("TikTok", value=True)
-    active_yt = st.toggle("YouTube", value=True)
-    active_lk = st.toggle("LinkedIn", value=True)
-    
-    active_platforms = {
-        'twitter': active_tw,
-        'facebook': active_fb,
-        'instagram': active_ig,
-        'tiktok': active_tk,
-        'youtube': active_yt,
-        'linkedin': active_lk,
-        'others': True
-    }
-    
-    st.write("---")
-    preemptive_remove_linkedin = st.checkbox(
-        "Ignorar URLs do LinkedIn antes do filtro", 
-        value=True,
-        help="Descarta preventivamente links de linkedin.com para aliviar tamanho de query booleana."
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+        active_tw = st.toggle("Twitter / X", value=True)
+        active_fb = st.toggle("Facebook", value=True)
+        active_ig = st.toggle("Instagram", value=True)
+        active_tk = st.toggle("TikTok", value=True)
+        active_yt = st.toggle("YouTube", value=True)
+        active_lk = st.toggle("LinkedIn", value=True)
+        
+        active_platforms = {
+            'twitter': active_tw,
+            'facebook': active_fb,
+            'instagram': active_ig,
+            'tiktok': active_tk,
+            'youtube': active_yt,
+            'linkedin': active_lk,
+            'others': True
+        }
+        
+        preemptive_remove_linkedin = st.checkbox(
+            "Ignorar links LinkedIn antes do filtro", 
+            value=True,
+            help="Descarte preventivo de domínios linkedin.com para reduzir tamanho de queries booleanas."
+        )
+
 with col_right:
     # Preencher DataFrame inicial de trabalho
     df_work = pd.DataFrame()
@@ -646,7 +529,7 @@ with col_right:
         total_ids_extraidos = len(df_results[df_results['Valido'] == True]) if not df_results.empty else 0
         total_ids_unicos = len(ids_unicos)
         
-        # Exibir Métricas idênticas à UI do React
+        # Exibir Métricas
         st.markdown(f"""
         <div class="metrics-container">
             <div class="metric-card-styled">
@@ -673,7 +556,7 @@ with col_right:
         
         chunks_queries = []
         current_chunk = []
-        current_length = 8  # comprimento de prefixo 'inurls:('
+        current_length = 8  # comprimento de 'inurls:('
         
         for x in ids_unicos:
             formatted_id = f'"{x}"' if '-' in x else x
@@ -718,7 +601,7 @@ with col_right:
                 key="btn_download_txt"
             )
         else:
-            st.info("Nenhum ID social identificado para agrupar na query booleana.")
+            st.info("Nenhum ID social válido identificado com as regras selecionadas.")
             
         # Tabela de Preview idêntica à do React
         st.write("---")
@@ -744,9 +627,9 @@ with col_right:
                 key="btn_download_csv"
             )
     else:
-        st.info("Comece inserindo URLs válidas ou carregando planilhas na barra lateral esquerda para iniciar o monitoramento em tempo real.")
+        st.info("Comece inserindo as URLs ou carregando planilhas na barra lateral para ver o monitoramento em tempo real.")
         
-        # Exibir amostra visual se estiver vazio
+        # Exibir amostra do layout de resultado se estiver vazio
         st.markdown("#### Exemplo de Links Processados pelo Sistema:")
         ex_data = {
             'Link do Post': [
